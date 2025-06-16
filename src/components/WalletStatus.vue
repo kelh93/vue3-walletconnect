@@ -8,6 +8,7 @@
     <input v-model="toAddress" placeholder="请输入收款地址" />
     <input v-model.number="amount" type="number" placeholder="请输入转账金额（TRX）" />
     <button @click="transfer">转账</button>
+    <p>交易hash: <span>{{ txHash }}</span> <button @click="copyTxHash">复制</button></p>
   </div>
 </template>
 
@@ -20,6 +21,7 @@ const { wallet, address, connected, disconnect } = useWallet()
 const balance = ref(0)
 const toAddress = ref('')
 const amount = ref(0)
+const txHash = ref('')
 
 console.log('TronWeb', TronWeb)
 const tronWeb = new TronWeb({ fullHost: 'https://api.shasta.trongrid.io' })
@@ -51,8 +53,20 @@ const transfer = async () => {
     // 清空输入框
     toAddress.value = ''
     amount.value = 0
+    txHash.value = result.txid
+    alert('转账成功', result.txid)
   } catch (error) {
     console.error('转账失败:', error)
+  }
+}
+
+const copyTxHash = async () => {
+  if (!txHash.value) return
+  try {
+    await navigator.clipboard.writeText(txHash.value)
+    alert('复制成功')
+  } catch (error) {
+    console.error('复制失败:', error)
   }
 }
 </script>
